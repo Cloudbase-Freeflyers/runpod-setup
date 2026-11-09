@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RunPod Setup — OpenClaw AI Lab</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; padding: 32px 16px; }
+  h1 { text-align: center; font-size: 1.6rem; font-weight: 700; color: #f8fafc; margin-bottom: 8px; }
+  .subtitle { text-align: center; color: #94a3b8; font-size: 0.9rem; margin-bottom: 40px; }
+  .section { margin-bottom: 40px; }
+  .section-title { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 16px; padding-left: 4px; }
+  .flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; justify-content: center; margin-bottom: 32px; }
+  .flow-box { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 14px 18px; text-align: center; min-width: 110px; }
+  .flow-box .label { font-size: 0.7rem; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .flow-box .name { font-size: 0.9rem; font-weight: 600; color: #e2e8f0; }
+  .flow-box.highlight { background: #1e3a5f; border-color: #3b82f6; }
+  .flow-box.highlight .name { color: #60a5fa; }
+  .flow-box.green { background: #14281f; border-color: #22c55e; }
+  .flow-box.green .name { color: #4ade80; }
+  .flow-box.purple { background: #1e1b3a; border-color: #8b5cf6; }
+  .flow-box.purple .name { color: #a78bfa; }
+  .arrow { color: #475569; font-size: 1.2rem; padding: 0 8px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+  .card { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 16px; }
+  .card-icon { font-size: 1.4rem; margin-bottom: 8px; }
+  .card-title { font-size: 0.85rem; font-weight: 600; color: #f1f5f9; margin-bottom: 6px; }
+  .card-desc { font-size: 0.78rem; color: #94a3b8; line-height: 1.5; }
+  .card.blue { border-color: #3b82f6; }
+  .card.green { border-color: #22c55e; }
+  .card.orange { border-color: #f97316; }
+  .card.purple { border-color: #8b5cf6; }
+  .steps { display: flex; flex-direction: column; gap: 10px; }
+  .step { display: flex; align-items: flex-start; gap: 14px; background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 14px 16px; }
+  .step-num { background: #3b82f6; color: white; font-size: 0.75rem; font-weight: 700; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .step-content .step-title { font-size: 0.88rem; font-weight: 600; color: #f1f5f9; margin-bottom: 3px; }
+  .step-content .step-detail { font-size: 0.78rem; color: #94a3b8; }
+  code { background: #0f172a; border: 1px solid #334155; border-radius: 4px; padding: 1px 6px; font-family: 'Courier New', monospace; font-size: 0.75rem; color: #7dd3fc; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  th { background: #1e293b; color: #94a3b8; font-weight: 600; text-align: left; padding: 10px 12px; border-bottom: 1px solid #334155; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  td { padding: 10px 12px; border-bottom: 1px solid #1e293b; color: #e2e8f0; }
+  tr:hover td { background: #1e293b44; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+  .badge.green { background: #14281f; color: #4ade80; border: 1px solid #22c55e; }
+  .badge.yellow { background: #2a1f00; color: #fbbf24; border: 1px solid #d97706; }
+  .badge.red { background: #2a0a0a; color: #f87171; border: 1px solid #ef4444; }
+  .divider { height: 1px; background: #1e293b; margin: 32px 0; }
+  .tip { background: #0c1f38; border: 1px solid #1e40af; border-radius: 8px; padding: 14px 16px; font-size: 0.82rem; color: #93c5fd; line-height: 1.6; }
+  .tip strong { color: #60a5fa; }
+  .max-w { max-width: 860px; margin: 0 auto; }
+</style>
+</head>
+<body>
+<div class="max-w">
+
+<h1>RunPod + OpenClaw — AI Lab Setup</h1>
+<p class="subtitle">Architecture, training pipeline, and cost breakdown</p>
+
+<div class="section">
+  <div class="section-title">Inference Architecture</div>
+  <div class="flow">
+    <div class="flow-box highlight"><div class="label">Orchestrator</div><div class="name">OpenClaw</div></div>
+    <div class="arrow">→</div>
+    <div class="flow-box"><div class="label">API Call</div><div class="name">HTTPS Endpoint</div></div>
+    <div class="arrow">→</div>
+    <div class="flow-box green"><div class="label">RunPod Pod</div><div class="name">Ollama / vLLM</div></div>
+    <div class="arrow">→</div>
+    <div class="flow-box purple"><div class="label">Model</div><div class="name">Llama / Mistral</div></div>
+  </div>
+  <div class="tip"><strong>OpenAI-compatible:</strong> RunPod pods expose an OpenAI-compatible API. OpenClaw can route to it exactly like Claude or GPT — just swap the endpoint URL and model name in config.</div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+  <div class="section-title">What to Run Where</div>
+  <div class="cards">
+    <div class="card blue"><div class="card-icon">🧠</div><div class="card-title">Frontier Models (Claude/GPT)</div><div class="card-desc">Complex reasoning, agentic decisions, multi-step tasks. No GPU needed — API calls only.</div></div>
+    <div class="card green"><div class="card-icon">⚡</div><div class="card-title">Local Ollama (Mac mini node)</div><div class="card-desc">Fast, cheap classification, drafting, summarization. Runs 24/7, no per-minute cost.</div></div>
+    <div class="card orange"><div class="card-icon">🏋️</div><div class="card-title">RunPod Pod (on-demand)</div><div class="card-desc">Training runs, fine-tuning, large model inference. Spin up → use → destroy. Pay per minute.</div></div>
+    <div class="card purple"><div class="card-icon">🚀</div><div class="card-title">RunPod Serverless</div><div class="card-desc">Deploy a trained model endpoint. Scales to zero. Pay per request, not per hour.</div></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+  <div class="section-title">Fine-Tuning Pipeline</div>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Prepare Training Data</div><div class="step-detail">Format as JSONL — prompt/response pairs. ~500 examples for a focused fine-tune. Upload to R2 or DO Spaces.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Pick a Base Model</div><div class="step-detail">Download from Hugging Face. <code>Llama-3.2-7B</code> or <code>Mistral-7B</code> are ideal starting points. Free open weights.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Spin Up RunPod A100 Pod</div><div class="step-detail">Use Unsloth template. ~$1.50/hr. Training a 7B model on 500 examples = 15–30 min = ~$0.75.</div></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Run Fine-Tune with Unsloth + LoRA</div><div class="step-detail">LoRA = parameter-efficient fine-tuning. Saves a ~100MB adapter file, not the full 7B model.</div></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-content"><div class="step-title">Save Adapter → Deploy</div><div class="step-detail">Push adapter to Hugging Face or R2. Merge with base model. Deploy as RunPod Serverless endpoint.</div></div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-content"><div class="step-title">Update OpenClaw Model Config</div><div class="step-detail">Point the new endpoint URL at your RunPod Serverless deployment. OpenClaw routes to it automatically.</div></div></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+  <div class="section-title">Cost Comparison</div>
+  <table>
+    <thead><tr><th>Provider</th><th>Billing</th><th>5-min cost</th><th>Best for</th><th>Recommended</th></tr></thead>
+    <tbody>
+      <tr><td><strong>RunPod</strong></td><td>Per minute</td><td>~$0.08</td><td>Training + serving</td><td><span class="badge green">Start here</span></td></tr>
+      <tr><td><strong>Vast.ai</strong></td><td>Per minute</td><td>~$0.05</td><td>Cost squeezing</td><td><span class="badge yellow">Advanced</span></td></tr>
+      <tr><td><strong>Lambda Labs</strong></td><td>Per hour (1hr min)</td><td>$1–2</td><td>Long training runs</td><td><span class="badge yellow">Later</span></td></tr>
+      <tr><td><strong>DO GPU Droplets</strong></td><td>Per hour (1hr min)</td><td>$4.46</td><td>DO-native infra</td><td><span class="badge red">Skip for now</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+  <div class="section-title">Keys to Wire Into Vault</div>
+  <div class="cards">
+    <div class="card"><div class="card-icon">🤗</div><div class="card-title">Hugging Face Token</div><div class="card-desc">Download base models, upload trained adapters to private repos.</div></div>
+    <div class="card"><div class="card-icon">🏃</div><div class="card-title">RunPod API Key</div><div class="card-desc">Programmatically spin up/tear down pods from OpenClaw skills.</div></div>
+    <div class="card"><div class="card-icon">📊</div><div class="card-title">W&B Key (optional)</div><div class="card-desc">Track training runs, loss curves, compare experiments across fine-tunes.</div></div>
+    <div class="card"><div class="card-icon">🪣</div><div class="card-title">R2 / DO Spaces</div><div class="card-desc">Store training datasets and trained model weights between runs.</div></div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
